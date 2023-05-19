@@ -1,3 +1,4 @@
+require 'byebug'
 class PolyTreeNode
     attr_reader :value, :parent, :children
     attr_writer :children
@@ -13,11 +14,31 @@ class PolyTreeNode
     
     @parent = node
 
-    if node != nil
-        node.children << self
-        node.children.uniq!
-    end
+    node.children.push(self).uniq! if node != nil
   end
 
+  def add_child(child_node) #N3
+    child_node.parent = self
+  end
+
+  def remove_child(child_node)  
+    raise_error 'check your argument' unless self.children.include?(child_node)
+    child_node.parent = nil
+  end
+
+  def dfs(target_value)
+
+    return self if self.value == target_value
+    self.children.each do |node|
+      # debugger
+      return node if node.dfs(target_value) 
+      # if node.value == target_value
+      #   return node 
+    end
+    nil
+  end
 
 end
+
+
+
