@@ -2,7 +2,7 @@ require "byebug"
 require '../Poly Tree Node/lib/tree_node.rb'
 
 class KnightPathFinder
-    attr_accessor :considered_positions
+    attr_accessor :considered_positions, :queue
 
     def self.valid_moves(pos)
         row,column = pos
@@ -34,23 +34,24 @@ class KnightPathFinder
         @root_node = PolyTreeNode.new(starting_position)
         @considered_positions = [@root_node.value]
         build_move_tree(@root_node) #[0,0]
-
-        
     end
 
     def build_move_tree(node) #[0,0]
         # start with queue of JUST the root node, check what are the new_move_pos available? add each of those as a child.
         # shift an element out, check it, if not, add its children to new_move_post
-        if node.nil?
-            return []
-        else
-            @considered_positions << new_move_positions(node.value)
-            @considered_positions.each do |child_pos|
-                child = node.add_child(PolyTreeNode.new(child_pos))
-                # @considered_positions << child_pos
+        queue = []
+        queue << node
+        until queue.empty?
+            queue_pos = queue.shift
+            new_move_positions(queue_pos.value).each do |child_pos|
+                child = PolyTreeNode.new(child_pos)
+                queue_pos.add_child(child)
+                queue << child
+                @considered_positions << child_pos
             end
-            node.children.each {|c| build_move_tree(c)}
         end
+            # node.children.each {|c| build_move_tree(c)}
+        
 
     end
 
@@ -62,8 +63,12 @@ class KnightPathFinder
         end
     end
 
+    def find_path(end_pos)
+    end
+
 end
 
 k = KnightPathFinder.new([0,0])
 # p k.new_move_positions([2,1])
 p k.considered_positions
+p k.queue
